@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { LogIn } from "lucide-react";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { getSupabaseClient, getSupabaseConfigError } from "@/lib/supabase/client";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const configError = getSupabaseConfigError();
   const supabase = getSupabaseClient();
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase) {
-      setMessage("Supabase 환경변수를 먼저 설정해 주세요.");
+    if (!supabase || configError) {
+      setMessage(configError || "Supabase 환경변수를 먼저 설정해 주세요.");
       return;
     }
 
@@ -60,9 +61,9 @@ export function LoginForm() {
           </button>
         </form>
         {message ? <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm font-semibold text-slate-700">{message}</p> : null}
-        {!supabase ? (
+        {configError ? (
           <p className="mt-4 text-sm leading-6 text-muted">
-            `.env.local`에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`를 넣으면 로그인이 활성화됩니다.
+            Vercel 환경변수의 `NEXT_PUBLIC_SUPABASE_URL`에는 `https://xxxx.supabase.co` 형태의 Project URL을 넣어야 합니다.
           </p>
         ) : null}
       </section>
