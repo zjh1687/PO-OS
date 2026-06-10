@@ -8,6 +8,14 @@ import { sortTasks } from "@/lib/utils";
 import { priorityLabel, taskStatuses } from "@/types/po-os";
 
 export function DashboardView() {
+  return (
+    <AppShell title="Dashboard">
+      <DashboardContent />
+    </AppShell>
+  );
+}
+
+function DashboardContent() {
   const { tasks, projects, decisions, loading, createSampleData } = usePOData();
   const openTasks = tasks.filter((task) => task.status !== "done");
   const doneTasks = tasks.filter((task) => task.status === "done");
@@ -27,7 +35,7 @@ export function DashboardView() {
   }));
 
   return (
-    <AppShell title="Dashboard">
+    <>
       {loading ? <p className="rounded-lg bg-white p-5 font-semibold text-muted shadow-panel">데이터를 불러오는 중입니다.</p> : null}
       {!loading && tasks.length === 0 && projects.length === 0 ? (
         <section className="mb-5 rounded-lg border border-line bg-white p-5 shadow-panel">
@@ -131,6 +139,6 @@ export function DashboardView() {
           </div>
         </article>
       </section>
-    </AppShell>
+    </>
   );
 }

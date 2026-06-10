@@ -29,6 +29,14 @@ const emptyTaskForm: TaskFormState = {
 };
 
 export function TasksView() {
+  return (
+    <AppShell title="Tasks">
+      <TasksContent />
+    </AppShell>
+  );
+}
+
+function TasksContent() {
   const { tasks, projects, addTask, updateTask, moveTask, deleteTask } = usePOData();
   const [search, setSearch] = useState("");
   const [projectFilter, setProjectFilter] = useState("all");
@@ -99,7 +107,7 @@ export function TasksView() {
   }
 
   return (
-    <AppShell title="Tasks">
+    <>
       <section className="mb-5 rounded-lg border border-line bg-white p-4 shadow-panel">
         <div className="grid gap-3 xl:grid-cols-[1fr_220px_180px_auto]">
           <input
@@ -167,7 +175,7 @@ export function TasksView() {
           );
         })}
       </section>
-    </AppShell>
+    </>
   );
 }
 
