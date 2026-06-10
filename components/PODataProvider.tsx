@@ -5,6 +5,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { createSeedData } from "@/lib/seed";
+import type { AiImportInput } from "@/lib/validators";
 import type { AppData, Decision, Meeting, Project, Task, TaskPriority, TaskStatus } from "@/types/po-os";
 import { useToast } from "@/components/Toast";
 
@@ -29,6 +30,14 @@ type DataContextValue = AppData & {
   moveTask: (taskId: string, status: TaskStatus) => Promise<void>;
   deleteTask: (taskId: string) => Promise<void>;
   createSampleData: () => Promise<void>;
+  importAiJson: (input: AiImportInput) => Promise<ImportSummary | null>;
+};
+
+type ImportSummary = {
+  projects: number;
+  tasks: number;
+  decisions: number;
+  meetings: number;
 };
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -218,6 +227,141 @@ export function PODataProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refresh, session?.user, showToast, supabase]);
 
+  const importAiJson = useCallback(
+    async (input: AiImportInput): Promise<ImportSummary | null> => {
+      if (!supabase || !session?.user) return null;
+
+      const projectMap = new Map(data.projects.map((project) => [project.name, project]));
+      let projectCount = 0;
+
+      const explicitProjects = input.projects.filter((project) => project.name.trim());
+      if (explicitProjects.length) {
+        const newProjects = explicitProjects
+          .filter((project) => !projectMap.has(project.name))
+          .map((project) => ({
+            user_id: session.user.id,
+            name: project.name,
+            goal: project.goal,
+            status: project.status,
+            due_date: project.due_date || null,
+            progress: project.progress,
+            risk: project.risk,
+          }));
+
+        if (newProjects.length) {
+          const { data: insertedProjects, error } = await supabase.from("projects").insert(newProjects).select("*");
+          if (error) {
+            showToast(error.message, "error");
+            return null;
+          }
+          (insertedProjects as Project[] | null)?.forEach((project) => projectMap.set(project.name, project));
+          projectCount += insertedProjects?.length || 0;
+        }
+      }
+
+      const referencedProjectNames = [
+        ...input.tasks.map((task) => task.project_name),
+        ...input.decisions.map((decision) => decision.project_name),
+      ]
+        .map((name) => name.trim())
+        .filter(Boolean);
+
+      for (const projectName of referencedProjectNames) {
+        if (projectMap.has(projectName)) continue;
+        const project = await ensureProject(projectName);
+        if (project) {
+          projectMap.set(project.name, project);
+          projectCount += 1;
+        }
+      }
+
+      let taskCount = 0;
+      if (input.tasks.length) {
+        const { error, count } = await supabase.from("tasks").insert(
+          input.tasks.map((task) => {
+            const project = projectMap.get(task.project_name);
+            return {
+              user_id: session.user.id,
+              project_id: project?.id || null,
+              project_name: task.project_name,
+              title: task.title,
+              priority: task.priority,
+              status: task.status,
+              due_date: task.due_date || null,
+              source: task.source,
+              memo: task.memo,
+              completed_at: task.status === "done" ? new Date().toISOString() : null,
+            };
+          }),
+          { count: "exact" },
+        );
+        if (error) {
+          showToast(error.message, "error");
+          return null;
+        }
+        taskCount = count || input.tasks.length;
+      }
+
+      let decisionCount = 0;
+      if (input.decisions.length) {
+        const { error, count } = await supabase.from("decisions").insert(
+          input.decisions.map((decision) => {
+            const project = projectMap.get(decision.project_name);
+            return {
+              user_id: session.user.id,
+              project_id: project?.id || null,
+              project_name: decision.project_name,
+              date: decision.date,
+              topic: decision.topic,
+              decision: decision.decision,
+              reason: decision.reason,
+              requested_by: decision.requested_by,
+              next_action: decision.next_action,
+            };
+          }),
+          { count: "exact" },
+        );
+        if (error) {
+          showToast(error.message, "error");
+          return null;
+        }
+        decisionCount = count || input.decisions.length;
+      }
+
+      let meetingCount = 0;
+      if (input.meetings.length) {
+        const { error, count } = await supabase.from("meetings").insert(
+          input.meetings.map((meeting) => ({
+            user_id: session.user.id,
+            date: meeting.date,
+            title: meeting.title,
+            attendees: meeting.attendees,
+            summary: meeting.summary,
+            actions: meeting.actions,
+          })),
+          { count: "exact" },
+        );
+        if (error) {
+          showToast(error.message, "error");
+          return null;
+        }
+        meetingCount = count || input.meetings.length;
+      }
+
+      const summary = {
+        projects: projectCount,
+        tasks: taskCount,
+        decisions: decisionCount,
+        meetings: meetingCount,
+      };
+
+      showToast("AI JSON 데이터를 저장했습니다.");
+      await refresh();
+      return summary;
+    },
+    [data.projects, ensureProject, refresh, session?.user, showToast, supabase],
+  );
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -237,8 +381,9 @@ export function PODataProvider({ children }: { children: React.ReactNode }) {
       moveTask,
       deleteTask,
       createSampleData,
+      importAiJson,
     }),
-    [addTask, createSampleData, data, deleteTask, loading, moveTask, refresh, session?.user, signOut, supabase, updateTask],
+    [addTask, createSampleData, data, deleteTask, importAiJson, loading, moveTask, refresh, session?.user, signOut, supabase, updateTask],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
