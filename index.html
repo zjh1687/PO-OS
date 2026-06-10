@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>승철님의 PO OS</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">PO</div>
+        <div>
+          <h1>승철님의 PO OS</h1>
+          <p>Product Operating System</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="주요 메뉴">
+        <button class="nav-item active" data-section="dashboard">Dashboard</button>
+        <button class="nav-item" data-section="tasks">Tasks</button>
+        <button class="nav-item" data-section="projects">Roadmap</button>
+        <button class="nav-item" data-section="decisions">Decision Log</button>
+        <button class="nav-item" data-section="meetings">Meetings</button>
+        <button class="nav-item" data-section="reports">Reports</button>
+        <button class="nav-item" data-section="gpt">GPT Assistant</button>
+        <button class="nav-item" data-section="settings">Backup</button>
+      </nav>
+      <div class="sidebar-footer">
+        <p>오늘의 원칙</p>
+        <strong>업무는 할 일보다 근거와 결과로 관리합니다.</strong>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Daily Command Center</p>
+          <h2 id="sectionTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <button class="ghost" id="seedBtn" title="샘플 데이터로 초기화">샘플 초기화</button>
+          <button class="primary" id="openQuickAdd">+ 업무 추가</button>
+        </div>
+      </header>
+
+      <section class="quick-capture" id="quickCapture">
+        <form id="quickTaskForm" class="quick-form">
+          <div class="field wide">
+            <label for="taskTitle">업무명</label>
+            <input id="taskTitle" name="title" type="text" placeholder="예: NET 인증 Novel Technology 차별성 분석" required />
+          </div>
+          <div class="field">
+            <label for="taskProject">프로젝트</label>
+            <input id="taskProject" name="project" type="text" placeholder="예: NET 인증" list="projectList" required />
+            <datalist id="projectList"></datalist>
+          </div>
+          <div class="field">
+            <label for="taskPriority">우선순위</label>
+            <select id="taskPriority" name="priority">
+              <option value="high">상</option>
+              <option value="medium" selected>중</option>
+              <option value="low">하</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="taskDueDate">마감일</label>
+            <input id="taskDueDate" name="dueDate" type="date" />
+          </div>
+          <div class="field">
+            <label for="taskStatus">상태</label>
+            <select id="taskStatus" name="status">
+              <option value="inbox">Inbox</option>
+              <option value="backlog">Backlog</option>
+              <option value="doing" selected>Doing</option>
+              <option value="waiting">Waiting</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="taskSource">출처</label>
+            <input id="taskSource" name="source" type="text" placeholder="CTO / 회의 / 자체" />
+          </div>
+          <div class="field wide">
+            <label for="taskMemo">메모</label>
+            <textarea id="taskMemo" name="memo" rows="2" placeholder="배경, 산출물, 리스크를 짧게 적어주세요."></textarea>
+          </div>
+          <button class="primary form-submit" type="submit">저장</button>
+        </form>
+      </section>
+
+      <section id="dashboard" class="content-section active">
+        <div class="grid cards" id="metricCards"></div>
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Focus</p>
+                <h3>오늘 봐야 할 업무</h3>
+              </div>
+            </div>
+            <div id="focusList" class="stack-list"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Project Health</p>
+                <h3>프로젝트 상태</h3>
+              </div>
+            </div>
+            <div id="projectHealth" class="project-list"></div>
+          </article>
+        </div>
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">KPI</p>
+                <h3>이번 달 업무 흐름</h3>
+              </div>
+            </div>
+            <canvas id="kpiChart" width="680" height="260" aria-label="업무 상태별 차트"></canvas>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Recent Decisions</p>
+                <h3>최근 의사결정</h3>
+              </div>
+            </div>
+            <div id="recentDecisions" class="stack-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="tasks" class="content-section">
+        <div class="section-toolbar">
+          <input id="taskSearch" type="search" placeholder="업무 검색: 프로젝트, 제목, 메모" />
+          <select id="taskProjectFilter"><option value="all">전체 프로젝트</option></select>
+          <select id="taskPriorityFilter">
+            <option value="all">전체 우선순위</option>
+            <option value="high">상</option>
+            <option value="medium">중</option>
+            <option value="low">하</option>
+          </select>
+        </div>
+        <div class="kanban" id="kanbanBoard"></div>
+      </section>
+
+      <section id="projects" class="content-section">
+        <div class="panel">
+          <div class="panel-header between">
+            <div>
+              <p class="eyebrow">Roadmap</p>
+              <h3>프로젝트 / 로드맵</h3>
+            </div>
+            <button class="secondary" id="addProjectBtn">프로젝트 추가</button>
+          </div>
+          <div id="roadmapList" class="roadmap"></div>
+        </div>
+        <dialog id="projectDialog" class="dialog">
+          <form method="dialog" id="projectForm">
+            <h3>프로젝트 추가</h3>
+            <label>프로젝트명<input name="name" required /></label>
+            <label>목표<textarea name="goal" rows="3" required></textarea></label>
+            <label>상태
+              <select name="status">
+                <option value="green">정상</option>
+                <option value="yellow">주의</option>
+                <option value="red">위험</option>
+              </select>
+            </label>
+            <label>마감일<input name="dueDate" type="date" /></label>
+            <label>진척률<input name="progress" type="number" min="0" max="100" value="0" /></label>
+            <label>리스크<textarea name="risk" rows="2"></textarea></label>
+            <div class="dialog-actions">
+              <button class="ghost" value="cancel" type="button" id="cancelProjectDialog">취소</button>
+              <button class="primary" value="default" type="submit">저장</button>
+            </div>
+          </form>
+        </dialog>
+      </section>
+
+      <section id="decisions" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Decision Log</p>
+                <h3>의사결정 기록</h3>
+              </div>
+            </div>
+            <form id="decisionForm" class="stack-form">
+              <label>일자<input name="date" type="date" required /></label>
+              <label>프로젝트<input name="project" list="projectList" placeholder="예: NET 인증" required /></label>
+              <label>주제<input name="topic" placeholder="예: NET 인증 기술 포지셔닝" required /></label>
+              <label>결정<textarea name="decision" rows="3" required></textarea></label>
+              <label>이유<textarea name="reason" rows="3" required></textarea></label>
+              <label>요청자 / 근거<input name="requestedBy" placeholder="예: CTO 피드백, 고객 요청, 내부 판단" /></label>
+              <label>다음 액션<input name="nextAction" placeholder="예: 기술 설명서 초안 작성" /></label>
+              <button class="primary" type="submit">Decision 저장</button>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">History</p>
+                <h3>기록 목록</h3>
+              </div>
+            </div>
+            <div id="decisionList" class="timeline"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="meetings" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Meeting Notes</p>
+                <h3>회의록 입력</h3>
+              </div>
+            </div>
+            <form id="meetingForm" class="stack-form">
+              <label>일자<input name="date" type="date" required /></label>
+              <label>회의명<input name="title" placeholder="예: CTO 피드백 싱크" required /></label>
+              <label>참석자<input name="attendees" placeholder="예: CTO, PO, Backend" /></label>
+              <label>요약<textarea name="summary" rows="4" required></textarea></label>
+              <label>액션아이템<textarea name="actions" rows="4" placeholder="- 담당자 / 할 일 / 마감일"></textarea></label>
+              <button class="primary" type="submit">회의록 저장</button>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Archive</p>
+                <h3>회의록 목록</h3>
+              </div>
+            </div>
+            <div id="meetingList" class="timeline"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="reports" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header between">
+              <div>
+                <p class="eyebrow">Auto Report</p>
+                <h3>보고서 생성</h3>
+              </div>
+              <div class="segmented">
+                <button data-report="weekly" class="active">주간</button>
+                <button data-report="monthly">월간</button>
+                <button data-report="cto">CTO</button>
+              </div>
+            </div>
+            <textarea id="reportOutput" class="large-output" spellcheck="false"></textarea>
+            <div class="button-row">
+              <button class="secondary" id="refreshReport">다시 생성</button>
+              <button class="primary" id="copyReport">복사</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Structure</p>
+                <h3>보고서 작성 기준</h3>
+              </div>
+            </div>
+            <div class="guide-box">
+              <h4>PO 보고서 핵심 구성</h4>
+              <p>1. 이번 기간의 산출물</p>
+              <p>2. 진행 중인 주요 이슈</p>
+              <p>3. 의사결정이 필요한 항목</p>
+              <p>4. 일정 지연 / 리스크</p>
+              <p>5. 다음 액션</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="gpt" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Prompt Builder</p>
+                <h3>GPT 업무 분석 프롬프트</h3>
+              </div>
+            </div>
+            <div class="prompt-controls">
+              <button class="secondary" data-prompt="triage">업무 분류</button>
+              <button class="secondary" data-prompt="risk">리스크 분석</button>
+              <button class="secondary" data-prompt="weekly">주간보고</button>
+              <button class="secondary" data-prompt="meeting">회의록 정리</button>
+              <button class="secondary" data-prompt="net">NET 인증</button>
+            </div>
+            <textarea id="promptOutput" class="large-output" spellcheck="false"></textarea>
+            <div class="button-row">
+              <button class="primary" id="copyPrompt">프롬프트 복사</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Operating Rules</p>
+                <h3>GPT와 함께 쓰는 방식</h3>
+              </div>
+            </div>
+            <div class="guide-box">
+              <h4>추천 루틴</h4>
+              <p><strong>아침:</strong> Inbox 업무를 입력하고 우선순위를 GPT로 분류합니다.</p>
+              <p><strong>회의 후:</strong> 회의록을 붙여 넣고 Decision / Task로 분리합니다.</p>
+              <p><strong>퇴근 전:</strong> Done / Waiting / Risk를 확인하고 보고서를 생성합니다.</p>
+              <p><strong>금요일:</strong> 주간보고 프롬프트를 복사해 보고서 초안을 만듭니다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="settings" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Backup</p>
+                <h3>데이터 백업 / 복원</h3>
+              </div>
+            </div>
+            <p class="muted">데이터는 현재 브라우저의 localStorage에 저장됩니다. PC를 바꾸거나 브라우저 데이터를 삭제하면 사라질 수 있으니 정기적으로 JSON 백업을 저장하세요.</p>
+            <div class="button-row vertical-gap">
+              <button class="primary" id="exportData">JSON 내보내기</button>
+              <label class="file-label">JSON 가져오기<input id="importData" type="file" accept="application/json" hidden /></label>
+              <button class="danger" id="clearData">전체 삭제</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Data Preview</p>
+                <h3>현재 데이터</h3>
+              </div>
+            </div>
+            <textarea id="dataPreview" class="large-output code" spellcheck="false"></textarea>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="taskCardTemplate">
+    <article class="task-card" draggable="true">
+      <div class="task-topline">
+        <span class="badge priority"></span>
+        <button class="icon-btn delete-task" title="삭제">×</button>
+      </div>
+      <h4></h4>
+      <p class="task-meta"></p>
+      <p class="task-memo"></p>
+      <div class="task-actions">
+        <button data-move="backlog">Backlog</button>
+        <button data-move="doing">Doing</button>
+        <button data-move="waiting">Waiting</button>
+        <button data-move="done">Done</button>
+      </div>
+    </article>
+  </template>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

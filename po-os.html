@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>승철님의 PO OS</title>
+  <style>
+:root {
+  --bg: #f4f6fb;
+  --panel: #ffffff;
+  --panel-2: #f8fafc;
+  --ink: #101828;
+  --muted: #667085;
+  --line: #e4e7ec;
+  --primary: #2457d6;
+  --primary-dark: #173fa6;
+  --soft-primary: #e8efff;
+  --danger: #c0362c;
+  --warning: #b7791f;
+  --success: #267a45;
+  --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --sidebar: #111827;
+  --sidebar-soft: #1f2937;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 288px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 28px 20px;
+  background: linear-gradient(180deg, var(--sidebar), #0b1120);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 34px;
+}
+
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: var(--primary);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.04em;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav-item {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: transparent;
+  color: #cbd5e1;
+  text-align: left;
+  transition: 0.16s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: var(--sidebar-soft);
+  color: #ffffff;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-footer p {
+  margin: 0 0 8px;
+  color: #93a4b8;
+  font-size: 12px;
+}
+
+.sidebar-footer strong {
+  display: block;
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+.main {
+  padding: 30px;
+  overflow-x: hidden;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.topbar h2 {
+  margin: 3px 0 0;
+  font-size: 34px;
+  letter-spacing: -0.06em;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.topbar-actions,
+.button-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.primary,
+.secondary,
+.ghost,
+.danger,
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-weight: 750;
+  transition: 0.16s ease;
+}
+
+.primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 10px 18px rgba(36, 87, 214, 0.18);
+}
+
+.primary:hover { background: var(--primary-dark); }
+
+.secondary,
+.file-label {
+  background: var(--soft-primary);
+  color: var(--primary-dark);
+}
+
+.secondary:hover,
+.file-label:hover { background: #d7e3ff; }
+
+.ghost {
+  background: #fff;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.ghost:hover { color: var(--ink); border-color: #cbd5e1; }
+
+.danger {
+  background: #fff1f0;
+  color: var(--danger);
+}
+
+.danger:hover { background: #ffe2df; }
+
+.quick-capture {
+  display: none;
+  margin-bottom: 22px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+}
+
+.quick-capture.open { display: block; }
+
+.quick-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 0.7fr 0.9fr 0.8fr 0.8fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field.wide { grid-column: span 2; }
+
+label {
+  display: grid;
+  gap: 7px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+  padding: 12px 13px;
+  transition: 0.16s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(36, 87, 214, 0.1);
+}
+
+textarea { resize: vertical; }
+
+.form-submit { align-self: stretch; }
+
+.content-section { display: none; }
+.content-section.active { display: block; }
+
+.grid { display: grid; gap: 18px; }
+.cards { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 18px; }
+.two-col { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); margin-bottom: 18px; }
+
+.metric-card,
+.panel {
+  background: var(--panel);
+  border: 1px solid rgba(228, 231, 236, 0.9);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+}
+
+.metric-card {
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::after {
+  content: "";
+  position: absolute;
+  right: -26px;
+  top: -34px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--soft-primary);
+}
+
+.metric-card p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.metric-card strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 10px;
+  font-size: 34px;
+  letter-spacing: -0.06em;
+}
+
+.metric-card span {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.panel { padding: 22px; }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-header h3 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  letter-spacing: -0.04em;
+}
+
+.between { justify-content: space-between; }
+
+.stack-list,
+.project-list,
+.timeline,
+.roadmap {
+  display: grid;
+  gap: 12px;
+}
+
+.list-item,
+.project-item,
+.timeline-item,
+.roadmap-item {
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel-2);
+}
+
+.list-item h4,
+.project-item h4,
+.timeline-item h4,
+.roadmap-item h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.list-item p,
+.project-item p,
+.timeline-item p,
+.roadmap-item p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 13px;
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #eef2ff;
+  color: var(--primary-dark);
+}
+
+.badge.high,
+.badge.red { background: #fff1f0; color: var(--danger); }
+.badge.medium,
+.badge.yellow { background: #fff8e6; color: var(--warning); }
+.badge.low,
+.badge.green { background: #edfff4; color: var(--success); }
+.badge.status { background: #f2f4f7; color: #475467; }
+
+.section-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 220px 180px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(240px, 1fr));
+  gap: 14px;
+  align-items: start;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.kanban-column {
+  min-height: 520px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.68);
+  padding: 12px;
+}
+
+.kanban-column.drag-over {
+  outline: 3px solid rgba(36, 87, 214, 0.2);
+  background: #eef4ff;
+}
+
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 5px 6px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.kanban-column-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.kanban-column-header span {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--soft-primary);
+  color: var(--primary-dark);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kanban-list {
+  display: grid;
+  gap: 10px;
+}
+
+.task-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  padding: 14px;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.06);
+}
+
+.task-card.dragging { opacity: 0.55; }
+
+.task-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f2f4f7;
+  color: #667085;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.icon-btn:hover { background: #fee4e2; color: var(--danger); }
+
+.task-card h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.task-meta,
+.task-memo {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.task-memo { margin-top: 8px; }
+
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.task-actions button {
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: 8px;
+  background: #f2f4f7;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.task-actions button:hover { background: var(--soft-primary); color: var(--primary-dark); }
+
+.progress-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #e4e7ec;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+}
+
+.stack-form {
+  display: grid;
+  gap: 12px;
+}
+
+.dialog {
+  border: 0;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  padding: 0;
+  max-width: 560px;
+  width: calc(100vw - 40px);
+}
+
+.dialog::backdrop { background: rgba(15, 23, 42, 0.42); }
+
+.dialog form {
+  display: grid;
+  gap: 13px;
+  padding: 24px;
+}
+
+.dialog h3 { margin: 0 0 4px; }
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.segmented button {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.segmented button.active {
+  background: var(--soft-primary);
+  color: var(--primary-dark);
+}
+
+.large-output {
+  min-height: 420px;
+  width: 100%;
+  line-height: 1.65;
+  font-family: inherit;
+  white-space: pre-wrap;
+}
+
+.code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.guide-box {
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+
+.guide-box h4 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.guide-box p {
+  margin: 9px 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.prompt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.muted {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.vertical-gap { margin-top: 18px; }
+
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  max-width: 360px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: #101828;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.empty-state {
+  padding: 24px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .two-col { grid-template-columns: 1fr; }
+  .quick-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field.wide { grid-column: span 2; }
+}
+
+@media (max-width: 860px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: relative;
+    height: auto;
+    padding: 18px;
+  }
+  .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sidebar-footer { display: none; }
+  .main { padding: 20px; }
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .section-toolbar { grid-template-columns: 1fr; }
+  .quick-form { grid-template-columns: 1fr; }
+  .field.wide { grid-column: span 1; }
+  .cards { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">PO</div>
+        <div>
+          <h1>승철님의 PO OS</h1>
+          <p>Product Operating System</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="주요 메뉴">
+        <button class="nav-item active" data-section="dashboard">Dashboard</button>
+        <button class="nav-item" data-section="tasks">Tasks</button>
+        <button class="nav-item" data-section="projects">Roadmap</button>
+        <button class="nav-item" data-section="decisions">Decision Log</button>
+        <button class="nav-item" data-section="meetings">Meetings</button>
+        <button class="nav-item" data-section="reports">Reports</button>
+        <button class="nav-item" data-section="gpt">GPT Assistant</button>
+        <button class="nav-item" data-section="settings">Backup</button>
+      </nav>
+      <div class="sidebar-footer">
+        <p>오늘의 원칙</p>
+        <strong>업무는 할 일보다 근거와 결과로 관리합니다.</strong>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Daily Command Center</p>
+          <h2 id="sectionTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <button class="ghost" id="seedBtn" title="샘플 데이터로 초기화">샘플 초기화</button>
+          <button class="primary" id="openQuickAdd">+ 업무 추가</button>
+        </div>
+      </header>
+
+      <section class="quick-capture" id="quickCapture">
+        <form id="quickTaskForm" class="quick-form">
+          <div class="field wide">
+            <label for="taskTitle">업무명</label>
+            <input id="taskTitle" name="title" type="text" placeholder="예: NET 인증 Novel Technology 차별성 분석" required />
+          </div>
+          <div class="field">
+            <label for="taskProject">프로젝트</label>
+            <input id="taskProject" name="project" type="text" placeholder="예: NET 인증" list="projectList" required />
+            <datalist id="projectList"></datalist>
+          </div>
+          <div class="field">
+            <label for="taskPriority">우선순위</label>
+            <select id="taskPriority" name="priority">
+              <option value="high">상</option>
+              <option value="medium" selected>중</option>
+              <option value="low">하</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="taskDueDate">마감일</label>
+            <input id="taskDueDate" name="dueDate" type="date" />
+          </div>
+          <div class="field">
+            <label for="taskStatus">상태</label>
+            <select id="taskStatus" name="status">
+              <option value="inbox">Inbox</option>
+              <option value="backlog">Backlog</option>
+              <option value="doing" selected>Doing</option>
+              <option value="waiting">Waiting</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="taskSource">출처</label>
+            <input id="taskSource" name="source" type="text" placeholder="CTO / 회의 / 자체" />
+          </div>
+          <div class="field wide">
+            <label for="taskMemo">메모</label>
+            <textarea id="taskMemo" name="memo" rows="2" placeholder="배경, 산출물, 리스크를 짧게 적어주세요."></textarea>
+          </div>
+          <button class="primary form-submit" type="submit">저장</button>
+        </form>
+      </section>
+
+      <section id="dashboard" class="content-section active">
+        <div class="grid cards" id="metricCards"></div>
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Focus</p>
+                <h3>오늘 봐야 할 업무</h3>
+              </div>
+            </div>
+            <div id="focusList" class="stack-list"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Project Health</p>
+                <h3>프로젝트 상태</h3>
+              </div>
+            </div>
+            <div id="projectHealth" class="project-list"></div>
+          </article>
+        </div>
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">KPI</p>
+                <h3>이번 달 업무 흐름</h3>
+              </div>
+            </div>
+            <canvas id="kpiChart" width="680" height="260" aria-label="업무 상태별 차트"></canvas>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Recent Decisions</p>
+                <h3>최근 의사결정</h3>
+              </div>
+            </div>
+            <div id="recentDecisions" class="stack-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="tasks" class="content-section">
+        <div class="section-toolbar">
+          <input id="taskSearch" type="search" placeholder="업무 검색: 프로젝트, 제목, 메모" />
+          <select id="taskProjectFilter"><option value="all">전체 프로젝트</option></select>
+          <select id="taskPriorityFilter">
+            <option value="all">전체 우선순위</option>
+            <option value="high">상</option>
+            <option value="medium">중</option>
+            <option value="low">하</option>
+          </select>
+        </div>
+        <div class="kanban" id="kanbanBoard"></div>
+      </section>
+
+      <section id="projects" class="content-section">
+        <div class="panel">
+          <div class="panel-header between">
+            <div>
+              <p class="eyebrow">Roadmap</p>
+              <h3>프로젝트 / 로드맵</h3>
+            </div>
+            <button class="secondary" id="addProjectBtn">프로젝트 추가</button>
+          </div>
+          <div id="roadmapList" class="roadmap"></div>
+        </div>
+        <dialog id="projectDialog" class="dialog">
+          <form method="dialog" id="projectForm">
+            <h3>프로젝트 추가</h3>
+            <label>프로젝트명<input name="name" required /></label>
+            <label>목표<textarea name="goal" rows="3" required></textarea></label>
+            <label>상태
+              <select name="status">
+                <option value="green">정상</option>
+                <option value="yellow">주의</option>
+                <option value="red">위험</option>
+              </select>
+            </label>
+            <label>마감일<input name="dueDate" type="date" /></label>
+            <label>진척률<input name="progress" type="number" min="0" max="100" value="0" /></label>
+            <label>리스크<textarea name="risk" rows="2"></textarea></label>
+            <div class="dialog-actions">
+              <button class="ghost" value="cancel" type="button" id="cancelProjectDialog">취소</button>
+              <button class="primary" value="default" type="submit">저장</button>
+            </div>
+          </form>
+        </dialog>
+      </section>
+
+      <section id="decisions" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Decision Log</p>
+                <h3>의사결정 기록</h3>
+              </div>
+            </div>
+            <form id="decisionForm" class="stack-form">
+              <label>일자<input name="date" type="date" required /></label>
+              <label>프로젝트<input name="project" list="projectList" placeholder="예: NET 인증" required /></label>
+              <label>주제<input name="topic" placeholder="예: NET 인증 기술 포지셔닝" required /></label>
+              <label>결정<textarea name="decision" rows="3" required></textarea></label>
+              <label>이유<textarea name="reason" rows="3" required></textarea></label>
+              <label>요청자 / 근거<input name="requestedBy" placeholder="예: CTO 피드백, 고객 요청, 내부 판단" /></label>
+              <label>다음 액션<input name="nextAction" placeholder="예: 기술 설명서 초안 작성" /></label>
+              <button class="primary" type="submit">Decision 저장</button>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">History</p>
+                <h3>기록 목록</h3>
+              </div>
+            </div>
+            <div id="decisionList" class="timeline"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="meetings" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Meeting Notes</p>
+                <h3>회의록 입력</h3>
+              </div>
+            </div>
+            <form id="meetingForm" class="stack-form">
+              <label>일자<input name="date" type="date" required /></label>
+              <label>회의명<input name="title" placeholder="예: CTO 피드백 싱크" required /></label>
+              <label>참석자<input name="attendees" placeholder="예: CTO, PO, Backend" /></label>
+              <label>요약<textarea name="summary" rows="4" required></textarea></label>
+              <label>액션아이템<textarea name="actions" rows="4" placeholder="- 담당자 / 할 일 / 마감일"></textarea></label>
+              <button class="primary" type="submit">회의록 저장</button>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Archive</p>
+                <h3>회의록 목록</h3>
+              </div>
+            </div>
+            <div id="meetingList" class="timeline"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="reports" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header between">
+              <div>
+                <p class="eyebrow">Auto Report</p>
+                <h3>보고서 생성</h3>
+              </div>
+              <div class="segmented">
+                <button data-report="weekly" class="active">주간</button>
+                <button data-report="monthly">월간</button>
+                <button data-report="cto">CTO</button>
+              </div>
+            </div>
+            <textarea id="reportOutput" class="large-output" spellcheck="false"></textarea>
+            <div class="button-row">
+              <button class="secondary" id="refreshReport">다시 생성</button>
+              <button class="primary" id="copyReport">복사</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Structure</p>
+                <h3>보고서 작성 기준</h3>
+              </div>
+            </div>
+            <div class="guide-box">
+              <h4>PO 보고서 핵심 구성</h4>
+              <p>1. 이번 기간의 산출물</p>
+              <p>2. 진행 중인 주요 이슈</p>
+              <p>3. 의사결정이 필요한 항목</p>
+              <p>4. 일정 지연 / 리스크</p>
+              <p>5. 다음 액션</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="gpt" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Prompt Builder</p>
+                <h3>GPT 업무 분석 프롬프트</h3>
+              </div>
+            </div>
+            <div class="prompt-controls">
+              <button class="secondary" data-prompt="triage">업무 분류</button>
+              <button class="secondary" data-prompt="risk">리스크 분석</button>
+              <button class="secondary" data-prompt="weekly">주간보고</button>
+              <button class="secondary" data-prompt="meeting">회의록 정리</button>
+              <button class="secondary" data-prompt="net">NET 인증</button>
+            </div>
+            <textarea id="promptOutput" class="large-output" spellcheck="false"></textarea>
+            <div class="button-row">
+              <button class="primary" id="copyPrompt">프롬프트 복사</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Operating Rules</p>
+                <h3>GPT와 함께 쓰는 방식</h3>
+              </div>
+            </div>
+            <div class="guide-box">
+              <h4>추천 루틴</h4>
+              <p><strong>아침:</strong> Inbox 업무를 입력하고 우선순위를 GPT로 분류합니다.</p>
+              <p><strong>회의 후:</strong> 회의록을 붙여 넣고 Decision / Task로 분리합니다.</p>
+              <p><strong>퇴근 전:</strong> Done / Waiting / Risk를 확인하고 보고서를 생성합니다.</p>
+              <p><strong>금요일:</strong> 주간보고 프롬프트를 복사해 보고서 초안을 만듭니다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="settings" class="content-section">
+        <div class="grid two-col">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Backup</p>
+                <h3>데이터 백업 / 복원</h3>
+              </div>
+            </div>
+            <p class="muted">데이터는 현재 브라우저의 localStorage에 저장됩니다. PC를 바꾸거나 브라우저 데이터를 삭제하면 사라질 수 있으니 정기적으로 JSON 백업을 저장하세요.</p>
+            <div class="button-row vertical-gap">
+              <button class="primary" id="exportData">JSON 내보내기</button>
+              <label class="file-label">JSON 가져오기<input id="importData" type="file" accept="application/json" hidden /></label>
+              <button class="danger" id="clearData">전체 삭제</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Data Preview</p>
+                <h3>현재 데이터</h3>
+              </div>
+            </div>
+            <textarea id="dataPreview" class="large-output code" spellcheck="false"></textarea>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="taskCardTemplate">
+    <article class="task-card" draggable="true">
+      <div class="task-topline">
+        <span class="badge priority"></span>
+        <button class="icon-btn delete-task" title="삭제">×</button>
+      </div>
+      <h4></h4>
+      <p class="task-meta"></p>
+      <p class="task-memo"></p>
+      <div class="task-actions">
+        <button data-move="backlog">Backlog</button>
+        <button data-move="doing">Doing</button>
+        <button data-move="waiting">Waiting</button>
+        <button data-move="done">Done</button>
+      </div>
+    </article>
+  </template>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+const STORAGE_KEY = "po-os-state-v1";
+
+const statusConfig = [
+  { id: "inbox", label: "Inbox", hint: "새로 들어온 업무" },
+  { id: "backlog", label: "Backlog", hint: "정리된 대기 업무" },
+  { id: "doing", label: "Doing", hint: "진행 중" },
+  { id: "waiting", label: "Waiting", hint: "외부 응답 / 의사결정 대기" },
+  { id: "done", label: "Done", hint: "완료" },
+];
+
+const priorityLabel = {
+  high: "상",
+  medium: "중",
+  low: "하",
+};
+
+const priorityWeight = {
+  high: 3,
+  medium: 2,
+  low: 1,
+};
+
+let state = loadState() || createSeedState();
+let currentReportType = "weekly";
+let currentPromptType = "triage";
+let draggedTaskId = null;
+
+saveState();
+boot();
+
+function boot() {
+  bindNavigation();
+  bindQuickTaskForm();
+  bindFilters();
+  bindProjectDialog();
+  bindDecisionForm();
+  bindMeetingForm();
+  bindReportControls();
+  bindPromptControls();
+  bindBackupControls();
+  renderAll();
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    console.warn("저장 데이터를 읽을 수 없습니다.", error);
+    return null;
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function createSeedState() {
+  const today = new Date();
+  const d = (offset) => toISODate(addDays(today, offset));
+  const now = new Date().toISOString();
+
+  return {
+    version: 1,
+    owner: "승철",
+    tasks: [
+      {
+        id: uid(),
+        title: "NET 인증 Novel Technology 차별성 분석",
+        project: "NET 인증",
+        priority: "high",
+        status: "doing",
+        dueDate: d(7),
+        source: "CTO 피드백",
+        memo: "기술 차별성, 신규성, 시장 적용 가능성을 한 문서로 정리",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "NET 인증 특허 / 논문 / 기술자료 근거 수집",
+        project: "NET 인증",
+        priority: "high",
+        status: "waiting",
+        dueDate: d(10),
+        source: "인증 준비",
+        memo: "기술성 설명에 쓸 근거자료와 레퍼런스 확보 필요",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "SQL Agent 제품 요구사항 PRD 초안 작성",
+        project: "SQL Agent",
+        priority: "high",
+        status: "doing",
+        dueDate: d(5),
+        source: "제품 기획",
+        memo: "권한, Trace, API, Admin 화면 범위를 명확히 정의",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "SQL Agent API / 권한 정책 개발 범위 확정",
+        project: "SQL Agent",
+        priority: "medium",
+        status: "backlog",
+        dueDate: d(12),
+        source: "개발 협의",
+        memo: "개발자와 작업 단위 분리 후 Jira Story로 등록",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "Admin 권한 화면 사용자 플로우 개선안 정리",
+        project: "Admin 개선",
+        priority: "medium",
+        status: "inbox",
+        dueDate: d(14),
+        source: "자체 발견",
+        memo: "권한 부여, 회수, 이력 확인 흐름을 화면 기준으로 정리",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "CTO 피드백 대응 목록화",
+        project: "PO 운영체계",
+        priority: "high",
+        status: "doing",
+        dueDate: d(2),
+        source: "CTO",
+        memo: "피드백을 Task / Decision / Risk로 분리",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "주간 PO 리포트 작성",
+        project: "PO 운영체계",
+        priority: "medium",
+        status: "backlog",
+        dueDate: d(3),
+        source: "정기 보고",
+        memo: "완료, 진행, 지연, 의사결정 필요 항목 중심",
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: uid(),
+        title: "지난주 회의 액션아이템 정리",
+        project: "PO 운영체계",
+        priority: "low",
+        status: "done",
+        dueDate: d(-2),
+        source: "회의록",
+        memo: "담당자와 마감일 기준으로 정리 완료",
+        createdAt: now,
+        updatedAt: now,
+        completedAt: now,
+      },
+    ],
+    projects: [
+      {
+        id: uid(),
+        name: "NET 인증",
+        goal: "자사 핵심 기술의 신규성, 독창성, 사업화 가능성을 증명해 인증 신청 기반을 확보한다.",
+        status: "yellow",
+        dueDate: d(30),
+        progress: 35,
+        risk: "Novel Technology 정의와 기존 기술 대비 차별성 근거가 더 필요함",
+      },
+      {
+        id: uid(),
+        name: "SQL Agent",
+        goal: "DB 접근, 권한, Trace, Admin 흐름을 제품 요구사항으로 확정하고 개발 가능한 단위로 분리한다.",
+        status: "green",
+        dueDate: d(45),
+        progress: 48,
+        risk: "권한 정책 범위가 넓어질 경우 Sprint 일정이 밀릴 수 있음",
+      },
+      {
+        id: uid(),
+        name: "Admin 개선",
+        goal: "관리자 사용성이 낮은 권한/설정 흐름을 개선한다.",
+        status: "green",
+        dueDate: d(60),
+        progress: 18,
+        risk: "기존 사용자 권한 모델 확인 필요",
+      },
+      {
+        id: uid(),
+        name: "PO 운영체계",
+        goal: "업무, 회의, 의사결정, 보고를 하나의 루틴으로 관리한다.",
+        status: "green",
+        dueDate: d(21),
+        progress: 55,
+        risk: "업무 입력 루틴이 유지되지 않으면 데이터 품질이 낮아질 수 있음",
+      },
+    ],
+    decisions: [
+      {
+        id: uid(),
+        date: d(-1),
+        project: "NET 인증",
+        topic: "NET 인증 스토리라인 방향",
+        decision: "기술 설명은 기능 나열보다 Novel Technology와 차별성 중심으로 구성한다.",
+        reason: "인증 심사에서 신규성, 기술성, 적용 가능성의 설득력이 중요하기 때문",
+        requestedBy: "CTO 피드백",
+        nextAction: "기존 기술 대비 차별점 표 작성",
+      },
+      {
+        id: uid(),
+        date: d(-3),
+        project: "SQL Agent",
+        topic: "PRD 작성 단위",
+        decision: "권한 정책, API, Trace UI를 분리해 각각 Story로 관리한다.",
+        reason: "개발 일정 산정과 리뷰 범위를 명확히 하기 위해서",
+        requestedBy: "PO 판단",
+        nextAction: "Jira Epic / Story 구조 초안 작성",
+      },
+    ],
+    meetings: [
+      {
+        id: uid(),
+        date: d(-1),
+        title: "CTO 피드백 싱크",
+        attendees: "CTO, PO",
+        summary: "NET 인증의 기술 차별성을 더 선명하게 보여줘야 한다는 피드백을 받음. SQL Agent는 개발 범위를 작게 나누어 일정 리스크를 낮추기로 함.",
+        actions: "- NET 인증 차별성 표 작성 / 승철 / 이번 주\n- SQL Agent PRD 초안 작성 / 승철 / 다음 회의 전",
+      },
+    ],
+  };
+}
+
+function bindNavigation() {
+  const buttons = document.querySelectorAll(".nav-item");
+  const title = document.getElementById("sectionTitle");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      buttons.forEach((b) => b.classList.remove("active"));
+      button.classList.add("active");
+      document.querySelectorAll(".content-section").forEach((section) => section.classList.remove("active"));
+      document.getElementById(button.dataset.section).classList.add("active");
+      title.textContent = button.textContent;
+      if (button.dataset.section === "settings") renderDataPreview();
+      if (button.dataset.section === "reports") renderReport();
+      if (button.dataset.section === "gpt") renderPrompt();
+    });
+  });
+
+  document.getElementById("openQuickAdd").addEventListener("click", () => {
+    document.getElementById("quickCapture").classList.toggle("open");
+    document.getElementById("taskTitle").focus();
+  });
+
+  document.getElementById("seedBtn").addEventListener("click", () => {
+    if (!confirm("현재 데이터를 샘플 데이터로 초기화할까요? 기존 데이터는 사라집니다.")) return;
+    state = createSeedState();
+    saveState();
+    renderAll();
+    toast("샘플 데이터로 초기화했습니다.");
+  });
+}
+
+function bindQuickTaskForm() {
+  const form = document.getElementById("quickTaskForm");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    const now = new Date().toISOString();
+    state.tasks.unshift({
+      id: uid(),
+      title: data.title.trim(),
+      project: data.project.trim(),
+      priority: data.priority,
+      status: data.status,
+      dueDate: data.dueDate,
+      source: data.source.trim() || "직접 입력",
+      memo: data.memo.trim(),
+      createdAt: now,
+      updatedAt: now,
+      completedAt: data.status === "done" ? now : null,
+    });
+    ensureProject(data.project.trim());
+    saveState();
+    form.reset();
+    document.getElementById("taskPriority").value = "medium";
+    document.getElementById("taskStatus").value = "doing";
+    renderAll();
+    toast("업무를 추가했습니다.");
+  });
+}
+
+function bindFilters() {
+  ["taskSearch", "taskProjectFilter", "taskPriorityFilter"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", renderKanban);
+  });
+}
+
+function bindProjectDialog() {
+  const dialog = document.getElementById("projectDialog");
+  const form = document.getElementById("projectForm");
+  document.getElementById("addProjectBtn").addEventListener("click", () => dialog.showModal());
+  document.getElementById("cancelProjectDialog").addEventListener("click", () => dialog.close());
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    state.projects.unshift({
+      id: uid(),
+      name: data.name.trim(),
+      goal: data.goal.trim(),
+      status: data.status,
+      dueDate: data.dueDate,
+      progress: Number(data.progress || 0),
+      risk: data.risk.trim(),
+    });
+    saveState();
+    form.reset();
+    dialog.close();
+    renderAll();
+    toast("프로젝트를 추가했습니다.");
+  });
+}
+
+function bindDecisionForm() {
+  const form = document.getElementById("decisionForm");
+  form.date.value = toISODate(new Date());
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    state.decisions.unshift({
+      id: uid(),
+      date: data.date,
+      project: data.project.trim(),
+      topic: data.topic.trim(),
+      decision: data.decision.trim(),
+      reason: data.reason.trim(),
+      requestedBy: data.requestedBy.trim(),
+      nextAction: data.nextAction.trim(),
+    });
+    ensureProject(data.project.trim());
+    saveState();
+    form.reset();
+    form.date.value = toISODate(new Date());
+    renderAll();
+    toast("의사결정을 저장했습니다.");
+  });
+}
+
+function bindMeetingForm() {
+  const form = document.getElementById("meetingForm");
+  form.date.value = toISODate(new Date());
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    state.meetings.unshift({
+      id: uid(),
+      date: data.date,
+      title: data.title.trim(),
+      attendees: data.attendees.trim(),
+      summary: data.summary.trim(),
+      actions: data.actions.trim(),
+    });
+    saveState();
+    form.reset();
+    form.date.value = toISODate(new Date());
+    renderAll();
+    toast("회의록을 저장했습니다.");
+  });
+}
+
+function bindReportControls() {
+  document.querySelectorAll("[data-report]").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentReportType = button.dataset.report;
+      document.querySelectorAll("[data-report]").forEach((b) => b.classList.remove("active"));
+      button.classList.add("active");
+      renderReport();
+    });
+  });
+
+  document.getElementById("refreshReport").addEventListener("click", renderReport);
+  document.getElementById("copyReport").addEventListener("click", () => copyText(document.getElementById("reportOutput").value));
+}
+
+function bindPromptControls() {
+  document.querySelectorAll("[data-prompt]").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentPromptType = button.dataset.prompt;
+      renderPrompt();
+    });
+  });
+  document.getElementById("copyPrompt").addEventListener("click", () => copyText(document.getElementById("promptOutput").value));
+}
+
+function bindBackupControls() {
+  document.getElementById("exportData").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `po-os-backup-${toISODate(new Date())}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+    toast("백업 파일을 내보냈습니다.");
+  });
+
+  document.getElementById("importData").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      const imported = JSON.parse(await file.text());
+      validateImportedState(imported);
+      state = imported;
+      saveState();
+      renderAll();
+      toast("백업 데이터를 가져왔습니다.");
+    } catch (error) {
+      alert("JSON 파일을 가져올 수 없습니다. PO OS 백업 파일인지 확인해주세요.");
+      console.error(error);
+    }
+  });
+
+  document.getElementById("clearData").addEventListener("click", () => {
+    if (!confirm("정말 전체 데이터를 삭제할까요? 이 작업은 되돌릴 수 없습니다.")) return;
+    state = { version: 1, owner: "승철", tasks: [], projects: [], decisions: [], meetings: [] };
+    saveState();
+    renderAll();
+    toast("전체 데이터를 삭제했습니다.");
+  });
+}
+
+function renderAll() {
+  renderProjectOptions();
+  renderDashboard();
+  renderKanban();
+  renderRoadmap();
+  renderDecisions();
+  renderMeetings();
+  renderReport();
+  renderPrompt();
+  renderDataPreview();
+}
+
+function renderProjectOptions() {
+  const names = getProjectNames();
+  const dataList = document.getElementById("projectList");
+  dataList.innerHTML = names.map((name) => `<option value="${escapeHtml(name)}"></option>`).join("");
+
+  const filter = document.getElementById("taskProjectFilter");
+  const current = filter.value;
+  filter.innerHTML = `<option value="all">전체 프로젝트</option>` + names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+  filter.value = names.includes(current) ? current : "all";
+}
+
+function renderDashboard() {
+  const openTasks = state.tasks.filter((task) => task.status !== "done");
+  const doneTasks = state.tasks.filter((task) => task.status === "done");
+  const overdueTasks = openTasks.filter(isOverdue);
+  const dueSoonTasks = openTasks.filter((task) => isDueWithin(task, 7));
+  const waitingTasks = state.tasks.filter((task) => task.status === "waiting");
+  const highTasks = openTasks.filter((task) => task.priority === "high");
+
+  const doneThisMonth = doneTasks.filter((task) => inCurrentMonth(task.completedAt || task.updatedAt || task.createdAt));
+  const completionRate = state.tasks.length ? Math.round((doneTasks.length / state.tasks.length) * 100) : 0;
+
+  const cards = [
+    { label: "진행 필요 업무", value: openTasks.length, sub: `상 우선순위 ${highTasks.length}건` },
+    { label: "마감 임박", value: dueSoonTasks.length, sub: "7일 이내 마감" },
+    { label: "대기 / 블로커", value: waitingTasks.length, sub: "응답 또는 결정 필요" },
+    { label: "이번 달 완료", value: doneThisMonth.length, sub: `전체 완료율 ${completionRate}%` },
+  ];
+
+  document.getElementById("metricCards").innerHTML = cards.map((card) => `
+    <article class="metric-card">
+      <p>${escapeHtml(card.label)}</p>
+      <strong>${card.value}</strong>
+      <span>${escapeHtml(card.sub)}</span>
+    </article>
+  `).join("");
+
+  const focus = [...overdueTasks, ...dueSoonTasks, ...highTasks]
+    .filter(uniqueById)
+    .sort(taskSort)
+    .slice(0, 7);
+
+  document.getElementById("focusList").innerHTML = focus.length ? focus.map((task) => `
+    <article class="list-item">
+      <h4>${escapeHtml(task.title)}</h4>
+      <p>${escapeHtml(task.project)} · ${statusLabel(task.status)} · 마감 ${displayDate(task.dueDate)}</p>
+      <div class="meta-row">
+        <span class="badge ${task.priority}">우선순위 ${priorityLabel[task.priority]}</span>
+        ${isOverdue(task) ? `<span class="badge high">지연</span>` : ""}
+        ${task.source ? `<span class="badge status">${escapeHtml(task.source)}</span>` : ""}
+      </div>
+    </article>
+  `).join("") : emptyState("오늘 집중할 업무가 없습니다.");
+
+  document.getElementById("projectHealth").innerHTML = state.projects.length ? state.projects.map((project) => {
+    const related = state.tasks.filter((task) => task.project === project.name);
+    const open = related.filter((task) => task.status !== "done").length;
+    return `
+      <article class="project-item">
+        <h4>${escapeHtml(project.name)} <span class="badge ${project.status}">${projectStatusLabel(project.status)}</span></h4>
+        <p>${escapeHtml(project.goal)}</p>
+        <div class="progress-track"><div class="progress-bar" style="width:${clamp(project.progress, 0, 100)}%"></div></div>
+        <div class="meta-row">
+          <span class="badge status">진척 ${project.progress}%</span>
+          <span class="badge status">열린 업무 ${open}건</span>
+          <span class="badge status">마감 ${displayDate(project.dueDate)}</span>
+        </div>
+      </article>
+    `;
+  }).join("") : emptyState("프로젝트가 없습니다.");
+
+  document.getElementById("recentDecisions").innerHTML = state.decisions.slice(0, 5).map((decision) => `
+    <article class="list-item">
+      <h4>${escapeHtml(decision.topic)}</h4>
+      <p>${escapeHtml(decision.decision)}</p>
+      <div class="meta-row">
+        <span class="badge status">${displayDate(decision.date)}</span>
+        <span class="badge status">${escapeHtml(decision.project)}</span>
+      </div>
+    </article>
+  `).join("") || emptyState("아직 의사결정 기록이 없습니다.");
+
+  drawKpiChart();
+}
+
+function renderKanban() {
+  const search = document.getElementById("taskSearch").value.trim().toLowerCase();
+  const projectFilter = document.getElementById("taskProjectFilter").value;
+  const priorityFilter = document.getElementById("taskPriorityFilter").value;
+
+  let tasks = state.tasks.filter((task) => {
+    const haystack = `${task.title} ${task.project} ${task.memo} ${task.source}`.toLowerCase();
+    const searchOk = !search || haystack.includes(search);
+    const projectOk = projectFilter === "all" || task.project === projectFilter;
+    const priorityOk = priorityFilter === "all" || task.priority === priorityFilter;
+    return searchOk && projectOk && priorityOk;
+  });
+
+  const board = document.getElementById("kanbanBoard");
+  board.innerHTML = statusConfig.map((status) => {
+    const columnTasks = tasks.filter((task) => task.status === status.id).sort(taskSort);
+    return `
+      <section class="kanban-column" data-status="${status.id}">
+        <div class="kanban-column-header">
+          <div>
+            <h3>${status.label}</h3>
+            <p class="muted">${status.hint}</p>
+          </div>
+          <span>${columnTasks.length}</span>
+        </div>
+        <div class="kanban-list">
+          ${columnTasks.map(renderTaskCard).join("") || emptyState("업무 없음")}
+        </div>
+      </section>
+    `;
+  }).join("");
+
+  board.querySelectorAll(".task-card").forEach((card) => {
+    card.addEventListener("dragstart", () => {
+      draggedTaskId = card.dataset.id;
+      card.classList.add("dragging");
+    });
+    card.addEventListener("dragend", () => {
+      draggedTaskId = null;
+      card.classList.remove("dragging");
+      document.querySelectorAll(".kanban-column").forEach((column) => column.classList.remove("drag-over"));
+    });
+  });
+
+  board.querySelectorAll(".kanban-column").forEach((column) => {
+    column.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      column.classList.add("drag-over");
+    });
+    column.addEventListener("dragleave", () => column.classList.remove("drag-over"));
+    column.addEventListener("drop", () => {
+      if (!draggedTaskId) return;
+      moveTask(draggedTaskId, column.dataset.status);
+      column.classList.remove("drag-over");
+    });
+  });
+
+  board.querySelectorAll("[data-move]").forEach((button) => {
+    button.addEventListener("click", () => moveTask(button.closest(".task-card").dataset.id, button.dataset.move));
+  });
+
+  board.querySelectorAll(".delete-task").forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest(".task-card");
+      const task = state.tasks.find((item) => item.id === card.dataset.id);
+      if (!confirm(`업무를 삭제할까요?\n\n${task.title}`)) return;
+      state.tasks = state.tasks.filter((item) => item.id !== card.dataset.id);
+      saveState();
+      renderAll();
+      toast("업무를 삭제했습니다.");
+    });
+  });
+}
+
+function renderTaskCard(task) {
+  const due = task.dueDate ? `마감 ${displayDate(task.dueDate)}` : "마감 없음";
+  return `
+    <article class="task-card" draggable="true" data-id="${task.id}">
+      <div class="task-topline">
+        <span class="badge priority ${task.priority}">우선순위 ${priorityLabel[task.priority]}</span>
+        <button class="icon-btn delete-task" title="삭제">×</button>
+      </div>
+      <h4>${escapeHtml(task.title)}</h4>
+      <p class="task-meta">${escapeHtml(task.project)} · ${due} · ${escapeHtml(task.source || "직접 입력")}</p>
+      ${task.memo ? `<p class="task-memo">${escapeHtml(task.memo)}</p>` : ""}
+      <div class="task-actions">
+        <button data-move="backlog">Backlog</button>
+        <button data-move="doing">Doing</button>
+        <button data-move="waiting">Waiting</button>
+        <button data-move="done">Done</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderRoadmap() {
+  document.getElementById("roadmapList").innerHTML = state.projects.length ? state.projects.map((project) => {
+    const tasks = state.tasks.filter((task) => task.project === project.name);
+    const done = tasks.filter((task) => task.status === "done").length;
+    const open = tasks.length - done;
+    const high = tasks.filter((task) => task.status !== "done" && task.priority === "high").length;
+    return `
+      <article class="roadmap-item">
+        <h4>${escapeHtml(project.name)} <span class="badge ${project.status}">${projectStatusLabel(project.status)}</span></h4>
+        <p>${escapeHtml(project.goal)}</p>
+        <div class="progress-track"><div class="progress-bar" style="width:${clamp(project.progress, 0, 100)}%"></div></div>
+        <div class="meta-row">
+          <span class="badge status">진척 ${project.progress}%</span>
+          <span class="badge status">마감 ${displayDate(project.dueDate)}</span>
+          <span class="badge status">완료 ${done}건</span>
+          <span class="badge status">진행 ${open}건</span>
+          ${high ? `<span class="badge high">상 우선순위 ${high}건</span>` : ""}
+        </div>
+        ${project.risk ? `<p style="margin-top:12px;"><strong>리스크:</strong> ${escapeHtml(project.risk)}</p>` : ""}
+      </article>
+    `;
+  }).join("") : emptyState("프로젝트가 없습니다. 프로젝트 추가 버튼으로 첫 로드맵을 만들어주세요.");
+}
+
+function renderDecisions() {
+  const sorted = [...state.decisions].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  document.getElementById("decisionList").innerHTML = sorted.map((decision) => `
+    <article class="timeline-item">
+      <h4>${escapeHtml(decision.topic)}</h4>
+      <p><strong>결정:</strong> ${escapeHtml(decision.decision)}</p>
+      <p><strong>이유:</strong> ${escapeHtml(decision.reason)}</p>
+      ${decision.nextAction ? `<p><strong>다음 액션:</strong> ${escapeHtml(decision.nextAction)}</p>` : ""}
+      <div class="meta-row">
+        <span class="badge status">${displayDate(decision.date)}</span>
+        <span class="badge status">${escapeHtml(decision.project)}</span>
+        ${decision.requestedBy ? `<span class="badge status">${escapeHtml(decision.requestedBy)}</span>` : ""}
+      </div>
+    </article>
+  `).join("") || emptyState("아직 기록된 의사결정이 없습니다.");
+}
+
+function renderMeetings() {
+  const sorted = [...state.meetings].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  document.getElementById("meetingList").innerHTML = sorted.map((meeting) => `
+    <article class="timeline-item">
+      <h4>${escapeHtml(meeting.title)}</h4>
+      <p>${escapeHtml(meeting.summary)}</p>
+      ${meeting.actions ? `<p style="margin-top:10px;"><strong>Action Items</strong><br>${escapeHtml(meeting.actions).replace(/\n/g, "<br>")}</p>` : ""}
+      <div class="meta-row">
+        <span class="badge status">${displayDate(meeting.date)}</span>
+        ${meeting.attendees ? `<span class="badge status">${escapeHtml(meeting.attendees)}</span>` : ""}
+      </div>
+    </article>
+  `).join("") || emptyState("아직 회의록이 없습니다.");
+}
+
+function renderReport() {
+  const output = document.getElementById("reportOutput");
+  if (!output) return;
+  output.value = buildReport(currentReportType);
+}
+
+function buildReport(type) {
+  const today = toISODate(new Date());
+  const open = state.tasks.filter((task) => task.status !== "done").sort(taskSort);
+  const done = state.tasks.filter((task) => task.status === "done").sort((a, b) => (b.completedAt || b.updatedAt || "").localeCompare(a.completedAt || a.updatedAt || ""));
+  const doing = state.tasks.filter((task) => task.status === "doing").sort(taskSort);
+  const waiting = state.tasks.filter((task) => task.status === "waiting").sort(taskSort);
+  const overdue = open.filter(isOverdue).sort(taskSort);
+  const high = open.filter((task) => task.priority === "high").sort(taskSort);
+  const recentDecisions = state.decisions.slice(0, 5);
+  const projectSummary = state.projects.map((project) => `- ${project.name}: ${projectStatusLabel(project.status)} / 진척 ${project.progress}% / 리스크: ${project.risk || "없음"}`).join("\n") || "- 등록된 프로젝트 없음";
+
+  if (type === "monthly") {
+    const monthDone = done.filter((task) => inCurrentMonth(task.completedAt || task.updatedAt || task.createdAt));
+    return `[월간 PO 업무 리포트] ${today}\n\n1. 이번 달 완료한 산출물\n${listTasks(monthDone)}\n\n2. 프로젝트 현황\n${projectSummary}\n\n3. 주요 의사결정\n${listDecisions(recentDecisions)}\n\n4. 현재 리스크 / 블로커\n${listTasks([...waiting, ...overdue].filter(uniqueById))}\n\n5. 다음 달 집중 과제\n${listTasks(high.slice(0, 7))}\n`;
+  }
+
+  if (type === "cto") {
+    return `[CTO 보고용 PO 업데이트] ${today}\n\n1. 핵심 요약\n- 현재 열린 업무 ${open.length}건, 상 우선순위 ${high.length}건, 대기/블로커 ${waiting.length}건입니다.\n\n2. 주요 진행 사항\n${listTasks(doing.slice(0, 8))}\n\n3. 의사결정이 필요한 항목\n${listTasks(waiting.slice(0, 8))}\n\n4. 주요 리스크\n${listTasks(overdue.concat(high).filter(uniqueById).slice(0, 8))}\n\n5. 최근 의사결정\n${listDecisions(recentDecisions)}\n\n6. 요청드릴 사항\n- 우선순위 충돌 항목이 있을 경우 결정 필요\n- 인증/제품 방향성 관련 추가 피드백 필요\n`;
+  }
+
+  return `[주간 PO 업무 리포트] ${today}\n\n1. 이번 주 완료\n${listTasks(done.slice(0, 8))}\n\n2. 진행 중\n${listTasks(doing.slice(0, 8))}\n\n3. 대기 / 블로커\n${listTasks(waiting.slice(0, 8))}\n\n4. 지연 / 리스크\n${listTasks(overdue.slice(0, 8))}\n\n5. 주요 의사결정\n${listDecisions(recentDecisions)}\n\n6. 다음 액션\n${listTasks(open.slice(0, 8))}\n`;
+}
+
+function renderPrompt() {
+  const output = document.getElementById("promptOutput");
+  if (!output) return;
+  output.value = buildPrompt(currentPromptType);
+}
+
+function buildPrompt(type) {
+  const context = buildCompactContext();
+  const base = `당신은 B2B SaaS / AI 제품을 담당하는 시니어 PO 코치입니다.\n아래 PO OS 데이터를 기준으로 분석해주세요.\n\n[현재 데이터]\n${context}\n`;
+
+  const prompts = {
+    triage: `${base}\n[요청]\n1. 업무를 긴급도/중요도 기준으로 재분류해주세요.\n2. 지금 당장 해야 할 Top 5를 뽑아주세요.\n3. 각 업무에 대해 산출물 정의, 다음 액션, 예상 리스크를 표로 정리해주세요.\n4. Jira Story로 전환할 수 있는 업무는 제목과 Acceptance Criteria까지 작성해주세요.`,
+    risk: `${base}\n[요청]\n1. 현재 프로젝트별 리스크를 기술/일정/조직/고객/인증 관점으로 분석해주세요.\n2. 리스크별 가능성, 영향도, 대응 방안을 표로 정리해주세요.\n3. CTO에게 즉시 공유해야 할 항목과 PO가 자체 해결할 항목을 구분해주세요.`,
+    weekly: `${base}\n[요청]\n1. CTO에게 보고할 수 있는 주간 PO 리포트를 작성해주세요.\n2. 완료/진행/대기/리스크/의사결정 필요 항목으로 나눠주세요.\n3. 문장은 짧고 명확하게 작성해주세요.\n4. 마지막에 다음 주 우선순위 5개를 제안해주세요.`,
+    meeting: `${base}\n[요청]\n내가 아래에 붙여넣을 회의 메모를 PO 관점으로 정리해주세요.\n\n[회의 메모]\n여기에 회의 내용을 붙여넣겠습니다.\n\n[출력 형식]\n1. 핵심 요약\n2. 결정 사항\n3. Action Item: 담당자 / 할 일 / 마감일\n4. Jira Task 후보\n5. Decision Log 후보\n6. 리스크`,
+    net: `${base}\n[요청]\nNET 인증 준비 관점에서 현재 데이터를 분석해주세요.\n1. Novel Technology 주장 포인트를 정리해주세요.\n2. 기존 기술 대비 차별성 표를 작성해주세요.\n3. 심사자가 물어볼 만한 질문과 답변 초안을 작성해주세요.\n4. 추가로 준비해야 할 증빙자료 목록을 제안해주세요.\n5. 기술 설명서 목차를 작성해주세요.`,
+  };
+
+  return prompts[type] || prompts.triage;
+}
+
+function buildCompactContext() {
+  const tasks = state.tasks.sort(taskSort).map((task) => `- [${statusLabel(task.status)} / ${priorityLabel[task.priority]}] ${task.project}: ${task.title} / 마감 ${displayDate(task.dueDate)} / 출처 ${task.source || "-"} / 메모 ${task.memo || "-"}`).join("\n") || "- 없음";
+  const projects = state.projects.map((project) => `- ${project.name}: ${projectStatusLabel(project.status)}, 진척 ${project.progress}%, 목표 ${project.goal}, 리스크 ${project.risk || "없음"}`).join("\n") || "- 없음";
+  const decisions = state.decisions.slice(0, 8).map((decision) => `- ${decision.date} / ${decision.project} / ${decision.topic}: ${decision.decision} / 이유 ${decision.reason}`).join("\n") || "- 없음";
+  const meetings = state.meetings.slice(0, 5).map((meeting) => `- ${meeting.date} / ${meeting.title}: ${meeting.summary} / 액션 ${meeting.actions || "없음"}`).join("\n") || "- 없음";
+
+  return `[Tasks]\n${tasks}\n\n[Projects]\n${projects}\n\n[Decision Log]\n${decisions}\n\n[Meetings]\n${meetings}`;
+}
+
+function renderDataPreview() {
+  const preview = document.getElementById("dataPreview");
+  if (preview) preview.value = JSON.stringify(state, null, 2);
+}
+
+function drawKpiChart() {
+  const canvas = document.getElementById("kpiChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const ratio = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const width = rect.width || canvas.width;
+  const height = 260;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  canvas.style.height = `${height}px`;
+  ctx.scale(ratio, ratio);
+  ctx.clearRect(0, 0, width, height);
+
+  const data = statusConfig.map((status) => ({
+    label: status.label,
+    count: state.tasks.filter((task) => task.status === status.id).length,
+  }));
+  const max = Math.max(1, ...data.map((item) => item.count));
+  const padding = 36;
+  const barGap = 16;
+  const barWidth = Math.max(32, (width - padding * 2 - barGap * (data.length - 1)) / data.length);
+  const chartHeight = height - 78;
+
+  ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+  ctx.fillStyle = "#667085";
+  ctx.fillText("상태별 업무 개수", padding, 18);
+
+  data.forEach((item, index) => {
+    const x = padding + index * (barWidth + barGap);
+    const barHeight = (item.count / max) * chartHeight;
+    const y = height - 42 - barHeight;
+    const radius = 12;
+
+    ctx.fillStyle = "#e8efff";
+    roundedRect(ctx, x, height - 42 - chartHeight, barWidth, chartHeight, radius);
+    ctx.fill();
+
+    ctx.fillStyle = "#2457d6";
+    roundedRect(ctx, x, y, barWidth, barHeight, radius);
+    ctx.fill();
+
+    ctx.fillStyle = "#101828";
+    ctx.font = "bold 16px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(item.count, x + barWidth / 2, Math.max(28, y - 9));
+
+    ctx.fillStyle = "#667085";
+    ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+    ctx.fillText(item.label, x + barWidth / 2, height - 16);
+  });
+  ctx.textAlign = "left";
+}
+
+function roundedRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function moveTask(taskId, nextStatus) {
+  const task = state.tasks.find((item) => item.id === taskId);
+  if (!task || task.status === nextStatus) return;
+  const now = new Date().toISOString();
+  task.status = nextStatus;
+  task.updatedAt = now;
+  task.completedAt = nextStatus === "done" ? now : null;
+  saveState();
+  renderAll();
+  toast(`업무 상태를 ${statusLabel(nextStatus)}로 변경했습니다.`);
+}
+
+function ensureProject(name) {
+  if (!name) return;
+  const exists = state.projects.some((project) => project.name === name);
+  if (exists) return;
+  state.projects.push({
+    id: uid(),
+    name,
+    goal: "목표를 입력해주세요.",
+    status: "yellow",
+    dueDate: "",
+    progress: 0,
+    risk: "아직 정리되지 않음",
+  });
+}
+
+function listTasks(tasks) {
+  if (!tasks.length) return "- 없음";
+  return tasks.map((task) => `- ${task.project} / ${task.title} / 상태 ${statusLabel(task.status)} / 우선순위 ${priorityLabel[task.priority]} / 마감 ${displayDate(task.dueDate)}${task.memo ? ` / 메모: ${task.memo}` : ""}`).join("\n");
+}
+
+function listDecisions(decisions) {
+  if (!decisions.length) return "- 없음";
+  return decisions.map((decision) => `- ${displayDate(decision.date)} / ${decision.project} / ${decision.topic}: ${decision.decision}`).join("\n");
+}
+
+function getProjectNames() {
+  return [...new Set([...state.projects.map((project) => project.name), ...state.tasks.map((task) => task.project)].filter(Boolean))].sort((a, b) => a.localeCompare(b, "ko"));
+}
+
+function taskSort(a, b) {
+  const priorityDiff = priorityWeight[b.priority] - priorityWeight[a.priority];
+  if (priorityDiff) return priorityDiff;
+  const dateA = a.dueDate || "9999-12-31";
+  const dateB = b.dueDate || "9999-12-31";
+  return dateA.localeCompare(dateB);
+}
+
+function isOverdue(task) {
+  if (!task.dueDate || task.status === "done") return false;
+  return task.dueDate < toISODate(new Date());
+}
+
+function isDueWithin(task, days) {
+  if (!task.dueDate || task.status === "done") return false;
+  const today = startOfDay(new Date());
+  const due = startOfDay(new Date(`${task.dueDate}T00:00:00`));
+  const diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+  return diff >= 0 && diff <= days;
+}
+
+function inCurrentMonth(dateLike) {
+  if (!dateLike) return false;
+  const date = new Date(dateLike);
+  const now = new Date();
+  return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+}
+
+function startOfDay(date) {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+function addDays(date, days) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function toISODate(date) {
+  const copy = new Date(date);
+  copy.setMinutes(copy.getMinutes() - copy.getTimezoneOffset());
+  return copy.toISOString().slice(0, 10);
+}
+
+function displayDate(date) {
+  if (!date) return "없음";
+  return date.replace(/-/g, ".");
+}
+
+function statusLabel(status) {
+  return statusConfig.find((item) => item.id === status)?.label || status;
+}
+
+function projectStatusLabel(status) {
+  return { green: "정상", yellow: "주의", red: "위험" }[status] || status;
+}
+
+function uniqueById(item, index, array) {
+  return array.findIndex((candidate) => candidate.id === item.id) === index;
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, Number(value || 0)));
+}
+
+function uid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function emptyState(message) {
+  return `<div class="empty-state">${escapeHtml(message)}</div>`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function copyText(value) {
+  try {
+    await navigator.clipboard.writeText(value);
+    toast("복사했습니다.");
+  } catch (error) {
+    const helper = document.createElement("textarea");
+    helper.value = value;
+    document.body.appendChild(helper);
+    helper.select();
+    document.execCommand("copy");
+    helper.remove();
+    toast("복사했습니다.");
+  }
+}
+
+function toast(message) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(el.timer);
+  el.timer = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+function validateImportedState(imported) {
+  if (!imported || !Array.isArray(imported.tasks) || !Array.isArray(imported.projects) || !Array.isArray(imported.decisions) || !Array.isArray(imported.meetings)) {
+    throw new Error("Invalid PO OS backup file");
+  }
+}
+
+window.addEventListener("resize", () => {
+  if (document.getElementById("dashboard").classList.contains("active")) drawKpiChart();
+});
+
+</script>
+</body>
+</html>
